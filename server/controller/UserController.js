@@ -1,7 +1,8 @@
 const userSchhema = require("../model/UserSchema");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-const registerUser = async (req, res) => {
+const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const user = await userSchhema.findOne({ email });
@@ -22,4 +23,32 @@ const registerUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser };
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await userSchhema.findOne({ email });
+    if (!user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "User not exists" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
+      expiresIn: "1h",
+    });
+    res
+      .status(200)
+      .json({ success: true, token, message: "Login successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error in login Server" });
+  }
+};
+
+module.exports = { register, login };
