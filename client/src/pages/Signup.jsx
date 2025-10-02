@@ -1,17 +1,19 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios(
-        "http://localost:5000/api/v1/auth/register",
+      const response = await axios.post(
+        "http://localhost:5000/api/v1/auth/register",
         {
           name,
           email,
@@ -19,6 +21,7 @@ const Signup = () => {
         }
       );
       alert("User Registered Successfully");
+      navigate("/login");
       console.log("User registered successfully", response.data);
     } catch (error) {
       console.log("Error while registering user");
@@ -48,8 +51,8 @@ const Signup = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 border-gray-200 border rounded-xl"
-              name="email"
               placeholder="Enter Email "
+              autoComplete="email"
               required
             />
           </div>
@@ -62,13 +65,14 @@ const Signup = () => {
               className="w-full px-3 py-2 border-gray-200 border rounded-xl"
               name="password"
               placeholder="******"
+              autoComplete="current-password"
               required
             />
           </div>
           <div className="mb-4 mt-2">
             <button
               type="submit"
-              className="w-full bg-teal-500 text-white py-2 rounded"
+              className="w-full bg-teal-500 text-white py-2 rounded cursor-pointer"
             >
               Signup
             </button>

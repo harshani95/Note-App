@@ -1,11 +1,31 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/v1/auth/login",
+        {
+          email,
+          password,
+        }
+      );
+      if (response.data.success) {
+        localStorage.setItem("token", response.data.token);
+        navigate("/");
+        alert("Login Successful");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -21,6 +41,7 @@ const Login = () => {
               className="w-full px-3 py-2 border-gray-200 border rounded-xl"
               name="email"
               placeholder="Enter Email "
+              autoComplete="email"
               required
             />
           </div>
@@ -33,18 +54,19 @@ const Login = () => {
               className="w-full px-3 py-2 border-gray-200 border rounded-xl"
               name="password"
               placeholder="******"
+              autoComplete="current-password"
               required
             />
           </div>
           <div className="mb-4 mt-2">
             <button
               type="submit"
-              className="w-full bg-teal-500 text-white py-2 rounded"
+              className="w-full bg-teal-500 text-white py-2 rounded cursor-pointer"
             >
               Login
             </button>
             <p className="text-center mt-2">
-              Don&apos;t Have Account? <Link to="/register">Signp</Link>
+              Don&apos;t Have Account? <Link to="/register">Signup</Link>
             </p>
           </div>
         </form>
