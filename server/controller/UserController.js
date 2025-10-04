@@ -43,12 +43,19 @@ const login = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
       expiresIn: "1h",
     });
-    res
-      .status(200)
-      .json({ success: true, token, message: "Login successfully" });
+    return res.status(200).json({
+      success: true,
+      token,
+      user: { name: user.name },
+      message: "Login successfully",
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error in login Server" });
+    return res.status(500).json({ message: "Error in login Server" });
   }
 };
 
-module.exports = { register, login };
+const getUser = async (req, res) => {
+  return res.status(200).json({ success: true, user: req.user });
+};
+
+module.exports = { register, login, getUser };
